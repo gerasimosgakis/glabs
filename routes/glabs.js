@@ -16,7 +16,6 @@ const mongoConnect = function() {
     cursor.forEach((doc, err) => {
       if (resultArr.indexOf(doc) === -1) {
         resultArr.push(doc);
-        console.log(resultArr);
       }
     });
   });
