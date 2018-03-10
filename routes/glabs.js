@@ -8,7 +8,7 @@ const url = 'mongodb://localhost:27017/';
 const resultArr = [];
 
 //Connects to mongDB and stores the docs in the array resultArr
-const mongoConnect = function() {
+mongoConnect = function() {
   MongoClient.connect(url, (err, db) => {
     if(err) throw err;
     var dbo = db.db("glabsdb");
