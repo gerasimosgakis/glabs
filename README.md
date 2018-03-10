@@ -16,7 +16,7 @@ Glabs receive a set of files daily from a bank that contain a structured XML sch
 6) Performs backups of the proocessed files and then deletes the original
 7) Simple UI to read the extracted data (the ReturnedDebitItems)
 
-## Running Locally
+### Running Locally
 
 Make sure you have [Node.js](http://nodejs.org/) and [MongoDB](https://www.mongodb.com/download-center) installed.
 
