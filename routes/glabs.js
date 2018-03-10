@@ -11,7 +11,7 @@ const resultArr = [];
 const mongoConnect = function() {
   MongoClient.connect(url, (err, db) => {
     if(err) throw err;
-    var dbo = db.db("finaldb");
+    var dbo = db.db("glabsdb");
     var cursor = dbo.collection('debitItems').find();
     cursor.forEach((doc, err) => {
       if (resultArr.indexOf(doc) === -1) {

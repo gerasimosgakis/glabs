@@ -9,7 +9,7 @@ var glabs = require('./routes/glabs');
 
 var app = express();
 
-// Here is where I call my app, setting up a cron job so it calls main once per day
+// Here is where I call my app, setting up a cron job so it calls main once per day at 10pm
 var CronJob = require('cron').CronJob;
 new CronJob('0 22 * * *', () => {
 	helper.main();

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const parser = require('xml2json');
 const mongojs = require('mongojs');
-const db = mongojs('finaldb');
+const db = mongojs('glabsdb');
 const collection1 = db.collection('debitItems');
 const collection2 = db.collection('fullDoc');
 const notifier = require('node-notifier');
@@ -47,8 +47,6 @@ const parseImportToDb = function(data) {
 			}
 		});
 		resolve('Imported to db');
-	}).then((results) => {
-		console.log(results);
 	});
 }
 
