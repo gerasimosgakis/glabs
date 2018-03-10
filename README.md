@@ -28,4 +28,5 @@ npm start
 ```
 
 Your app should now be running on [localhost:3000](http://localhost:3000/).
-[Sample page]()
+
+Please visit [Sample page](http://ec2-18-218-172-187.us-east-2.compute.amazonaws.com:3000/) for an example.
