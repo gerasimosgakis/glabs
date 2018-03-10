@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helper = require('./helper.js'); // my functions are in helper.js
-var glabs = require('./routes/glabs');
+var myData = require('./routes/myData');
 
 var app = express();
 
@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', glabs);
+app.use('/', myData);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
