@@ -1,0 +1,32 @@
+link(rel='stylesheet', href='/stylesheets/style.css')
+
+- var data = json
+
+
+div.container
+    h1 Returned Debit
+
+div.container
+  table
+    thead
+      tr
+        th Reference
+        th Name
+        th Value
+        th Description
+        th Number
+        th Sort Code
+        th Bank Name
+        th Branch Name
+    tbody
+      each ref in data
+        tr
+          td= ref.ref
+          td= ref.PayerAccount.name
+          td= ref.valueOf + ' ' + ref.currency
+          td= ref.returnDescription
+          td= ref.PayerAccount.number
+          td= ref.PayerAccount.sortCode
+          td= ref.PayerAccount.bankName
+          td= ref.PayerAccount.branchName
+          
