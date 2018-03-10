@@ -10,34 +10,33 @@ var url = 'mongodb://localhost:27017/';
 
 // Use connect method to connect to the Server
 
-var resultDebit;
+//var resultDebit;
 var resultArr = [];
 
-MongoClient.connect(url, function(err, db) {
-  if(err) throw err;
-  var dbo = db.db("finaldb");
-  /*dbo.collection("debitItems").findOne({}, function(err, result) {
-  	if (err) throw err;
-  	resultDebit = result._id;
-  	console.log(result);
-  	db.close();
-  });*/
-  var cursor = dbo.collection('debitItems').find();
-  cursor.forEach((doc, err) => {
-  	resultArr.push(doc);
-  }, () => {
-  	//db.close();
-  	console.log(resultArr);
-  	return;
-  })
+const mongoConnect = function() {
+  MongoClient.connect(url, function(err, db) {
+    if(err) throw err;
+    var dbo = db.db("finaldb");
+    var cursor = dbo.collection('debitItems').find();
+    cursor.forEach((doc, err) => {
+      if (resultArr.indexOf(doc) === -1) {
+        resultArr.push(doc);
+        console.log(resultArr);
+      }
+    }, () => {
+      //db.close();
+      console.log(resultArr);
+      return;
+    })
 
-});
+  });
+}
+
+mongoConnect();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  //res.render('index', { title: resultDebit });
   res.render('glabs-ui', { json: resultArr });
-
   //res.json(resultArr);
 });
 
