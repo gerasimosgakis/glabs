@@ -18,10 +18,7 @@ const mongoConnect = function() {
         resultArr.push(doc);
         console.log(resultArr);
       }
-    }, () => {
-      console.log(resultArr);
-      return;
-    })
+    }
 
   });
 }
