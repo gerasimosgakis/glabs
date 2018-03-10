@@ -4,15 +4,14 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var helper = require('./helper.js');
-
-var index = require('./routes/index');
-var users = require('./routes/users');
+var helper = require('./helper.js'); // my functions are in helper.js
+var glabs = require('./routes/glabs');
 
 var app = express();
 
+// Here is where I call my app, setting up a cron job so it calls main once per day
 var CronJob = require('cron').CronJob;
-new CronJob('* * * * *', () => {
+new CronJob('0 22 * * *', () => {
 	helper.main();
 }, null, true)
 
@@ -22,15 +21,14 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
-
+app.use('/', glabs);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

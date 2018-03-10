@@ -8,10 +8,7 @@ const notifier = require('node-notifier');
 const archiver = require('archiver');
 const path = require('path');
 const pathToDir = __dirname + '/xml-files'; // Path to the directory with the xml files
-var resultDebit;
-var resultArr = [];
-var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://localhost:27017/';
+
 // Reads files in given directory and adds data to db
 const addDataToDb = function(pathDir) {
 	return new Promise((resolve, reject) => { //promise
@@ -21,9 +18,8 @@ const addDataToDb = function(pathDir) {
 		      fs.readFile(pathDir + '/' + item, 'utf8', (err, contents) => { // reads file
 	        	parseImportToDb(parseXML(contents)); //Call function to import data to db
 		      })
-	    	}
-
-			}
+	      }
+		  }
 			if (err) {
 				reject(err);
 			}
@@ -155,21 +151,5 @@ exports.main = function() {
 	  		notify();
 	  	});
 	  });
-}
-
-
-exports.mongoConnect = function() {
-  MongoClient.connect(url, function(err, db) {
-    if(err) throw err;
-    var dbo = db.db("finaldb");
-    var cursor = dbo.collection('debitItems').find();
-    cursor.forEach((doc, err) => {
-      resultArr.push(doc);
-    }, () => {
-      //db.close();
-      console.log(resultArr);
-      return;
-    })
-
-  });
+	 
 }
