@@ -5,14 +5,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helper = require('./helper.js'); // my functions are in helper.js
-var glabs = require('./routes/glabs');
+var myData = require('./routes/myData');
 
 var app = express();
 
 // Here is where I call my app, setting up a cron job so it calls main once per day at 10pm
 var CronJob = require('cron').CronJob;
 new CronJob('0 22 * * *', () => {
-	helper.main();
+  helper.main();
 }, null, true)
 
 // view engine setup
@@ -28,7 +28,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+<<<<<<< HEAD
 //app.use('/', glabs);
+||||||| merged common ancestors
+app.use('/', glabs);
+=======
+app.use('/', myData);
+>>>>>>> 5bc686761906bd16f5dbc9c316576bf85ad0ff54
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
