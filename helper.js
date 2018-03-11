@@ -30,7 +30,7 @@ const addDataToDb = function(pathDir) {
 
 // Parses data from file, converts them to json and imports to db
 const parseImportToDb = function(data) {
-	new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const json = JSON.parse(data); // convert String into an object
 		const records = json.BACSDocument.Data.ARUDD.Advice.OriginatingAccountRecords; // This is the node the ReturnedDebitItem is child of
 		for (let record in records) { //Iterating in the keys 
@@ -106,15 +106,17 @@ const archive = function(pathDir) {
 
 // Delete the files that have been processed
 const deleteFiles = function(pathDir) {
-	new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		fs.readdir(pathDir, (err, files) => {
-			if (err) throw err;
+			if (err) {
+				reject(err);
+			}
 
 			for (const file of files) { //Iterates in the directory
 				if (file.endsWith('.txt')){
 					fs.unlink(path.join(pathDir, file), err => { // Deletes files ending in .txt or .xml
 						if (err) {
-							console.log('Error', err);
+							reject(err);
 						}
 					});
 				}
