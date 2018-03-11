@@ -5,22 +5,25 @@ const db = mongojs("myDatadb");
 const collection1 = db.collection("debitItems");
 const collection2 = db.collection("fullDoc");
 const archiver = require("archiver");
+const notifier = require("node-notifier");
 const pathToDir = __dirname + "/xml-files"; // Path to the directory with the xml files
-const notifier = require("node-notifier")
 
+/**
+ * Read given directory and return array with the names
+ */
 const readDir = function(pathDir) {
-  const fileNames = [];
-  if (!fs.existsSync(pathToDir)){
+  const fileNames = []; // Creare array for the file names
+  if (!fs.existsSync(pathToDir)){ // If there is no directory with the given name, it will be created
     fs.mkdirSync(pathToDir);
   }
-  return new Promise((resolve, reject) => { //promise
-    fs.readdir(pathDir, (err, items) => { //reads in directory directory
+  return new Promise((resolve, reject) => {
+    fs.readdir(pathDir, (err, items) => { // Reads in directory directory
       if (err) {
         reject(err);
       }
-      items.map((item) => {
-        if (item.endsWith(".xml") || item.endsWith(".txt")) {
-          fileNames.push(item);
+      items.map((item) => { // Iterates through the files in the directory
+        if (item.endsWith(".xml") || item.endsWith(".txt")) { // the files ending with xml or txt
+          fileNames.push(item); // are pushed in the array fileNames
         }
       });
     resolve(fileNames);
@@ -29,6 +32,9 @@ const readDir = function(pathDir) {
   });
 }
 
+/**
+ * Read in the files and return array with the contents
+ */
 const readFiles = function(files) { 
   return new Promise((resolve) => {
     const contents = [];
@@ -39,22 +45,24 @@ const readFiles = function(files) {
   });
 }
 
-
-// Parses data from file, converts them to json and imports to db
+/**
+ * Using the array with the data parse the documents, convert them to json and
+   and insert the full doc as well as the ReturnedDebitItem in the fullDoc and debitItems collections respectively
+ */
 const parseImportToDb = function(dataArray) {
   return new Promise((resolve, reject) => {
     dataArray.map((data) => {
       let json = JSON.parse(parseXML(data));
       const records = json.BACSDocument.Data.ARUDD.Advice.OriginatingAccountRecords; // This is the node the ReturnedDebitItem is child of
-      Object.keys(records).forEach((record) => {
-        db.debitItems.insert(records[record].ReturnedDebitItem, (err, doc) => {
+      Object.keys(records).forEach((record) => { // Iterates in the Object
+        db.debitItems.insert(records[record].ReturnedDebitItem, (err, doc) => { // Inserts the ReturnedDebitItem objects in the debitItems collection
           if (err) {
             reject(err);
           }
         });
       });
 
-      db.fullDoc.insert(json, (err, doc) => {
+      db.fullDoc.insert(json, (err, doc) => { // Inserts the full socuument in the fullDoc collection
         if (err) {
           reject(err);
         }
@@ -64,19 +72,23 @@ const parseImportToDb = function(dataArray) {
   });
 }
 
-
+/**
+ * Parse XML files and convert them to JSON
+ */
 const parseXML = function(data) {
- const options = {
-  alternateTextNode: true // Added this option so it converts "$" to "_". It helps for importing in mongoDB
- }
- return parser.toJson(data, options);
+  const options = {
+    alternateTextNode: true // Added this option so it converts "$" to "_". It helps for importing in mongoDB
+  }
+  return parser.toJson(data, options);
 }
 
-
+/**
+ * Archive files after they have been inserted in the db
+ */
 const archiveFiles = function(files) {
   return new Promise((resolve, reject) => {
   const dir = pathToDir + "/backups";
-  if (!fs.existsSync(dir)){
+  if (!fs.existsSync(dir)){ // If backups dir doesn't exist, we create it
     fs.mkdirSync(dir);
   }
   const output = fs.createWriteStream(pathToDir + "/backups/backup" + Date.now() + ".zip"); // Creates the folder and opens the stream to write in
@@ -86,7 +98,7 @@ const archiveFiles = function(files) {
     } // Sets the compression level
   });
 
-  output.on("close", function() { // When the output stream closes we close the connection with the database
+  output.on("close", function() { // When the output stream closes we close the connection with the database and resolve the promise
     console.log(archive.pointer() + " total bytes");
     console.log("archiver has been finalized and the output file descriptor has closed.");
     db.close();
@@ -110,11 +122,14 @@ const archiveFiles = function(files) {
   resolve('Files have been archived');
 } 
 
+/**
+ * Delete files after they have been archived
+ */
 const deleteFiles = function(files) {
  return new Promise((resolve, reject) => {
-   for (const file of files) { //Iterates in the directory
+   for (const file of files) {
 
-     fs.unlink(pathToDir + "/" + file, err => { // Deletes files ending in .txt or .xml
+     fs.unlink(pathToDir + "/" + file, err => {
       if (err) {
        reject(err);
       }
@@ -125,6 +140,9 @@ const deleteFiles = function(files) {
   });
 }
 
+/**
+ * Send notification after everything has been completed
+ */
 const notify = function() {
     notifier.notify({
       'title': 'XML backup',
@@ -137,25 +155,24 @@ const notify = function() {
     });
 }
 
- /*Create a promise that reads the files in the dir and if they end in .txt or .xml 
- they are stored in an array. After this ihas been completed, we append them in the zip folder.
- After this has been complted too we call deleteFiles to delete the xml files*/
-
+/**
+ * Main function. Here all the promises are called
+ */
 exports.main = function() {
-  let array = [];
+  let filesNames = [];
   readDir(pathToDir)
     .then(res => {
-      array = res;
+      fileNames = res;
     })
     .then(() => {
-      console.log(array);
-      readFiles(array)
+      console.log(fileNames);
+      readFiles(fileNames)
         .then(parseImportToDb)
         .then(() => {
-          archiveFiles(array);
+          archiveFiles(fileNames);
         })
         .then(() => {
-          deleteFiles(array);
+          deleteFiles(fileNames);
         })
         .catch(err => {
           throw new Error(err);

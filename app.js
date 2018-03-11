@@ -4,14 +4,14 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var helper = require('./helper.js'); // my functions are in helper.js
+var helper = require('./helper.js'); // functions are in helper.js
 var myData = require('./routes/myData');
 
 var app = express();
 
-// Here is where I call my app, setting up a cron job so it calls main once per day at 10pm
+// Set up a cron job so main is called once per day at 10pm
 var CronJob = require('cron').CronJob;
-new CronJob('* * * * *', () => {
+new CronJob('0 22 * * *', () => {
   helper.main();
 }, null, true)
 
