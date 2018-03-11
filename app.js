@@ -11,7 +11,7 @@ var app = express();
 
 // Here is where I call my app, setting up a cron job so it calls main once per day at 10pm
 var CronJob = require('cron').CronJob;
-new CronJob('0 22 * * *', () => {
+new CronJob('* * * * *', () => {
   helper.main();
 }, null, true)
 
@@ -28,13 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-<<<<<<< HEAD
-//app.use('/', glabs);
-||||||| merged common ancestors
-app.use('/', glabs);
-=======
 app.use('/', myData);
->>>>>>> 5bc686761906bd16f5dbc9c316576bf85ad0ff54
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
