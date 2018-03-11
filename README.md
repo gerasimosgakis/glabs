@@ -13,7 +13,7 @@ Glabs receive a set of files daily from a bank that contain a structured XML sch
 3) Store the full JSON document in mongoDB 
 4) Reads each JSON object document extracting all the <ReturnedDebitItem> objects and storing into the database
 5) Triggers a notification to indicate the files have been successfully parsed and key data extracted
-6) Performs backups of the proocessed files and then deletes the original
+6) Performs backups of the processed files and then deletes the original
 7) Simple UI to read the extracted data (the ReturnedDebitItems)
 
 ### Running Locally
