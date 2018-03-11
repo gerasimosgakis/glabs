@@ -21,7 +21,7 @@ Glabs receive a set of files daily from a bank that contain a structured XML sch
 Make sure you have [Node.js](http://nodejs.org/) and [MongoDB](https://www.mongodb.com/download-center) installed.
 
 ```sh
-git clone https://github.com/gerasimosgakis/glabs.git # or clone your own fork
+git clone https://github.com/gerasimosgakis/myData.git # or clone your own fork
 cd myGlabs
 npm install
 npm start
