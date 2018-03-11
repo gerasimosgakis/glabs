@@ -1,31 +1,32 @@
-const fs = require('fs');
-const parser = require('xml2json');
-const mongojs = require('mongojs');
-const db = mongojs('myDatadb');
-const collection1 = db.collection('debitItems');
-const collection2 = db.collection('fullDoc');
-const notifier = require('node-notifier');
-const archiver = require('archiver');
-const path = require('path');
-const pathToDir = __dirname + '/xml-files'; // Path to the directory with the xml files
+const fs = require("fs");
+const parser = require("xml2json");
+const mongojs = require("mongojs");
+const db = mongojs("myDatadb");
+const collection1 = db.collection("debitItems");
+const collection2 = db.collection("fullDoc");
+const notifier = require("node-notifier");
+const archiver = require("archiver");
+const path = require("path");
+const pathToDir = __dirname + "/xml-files"; // Path to the directory with the xml files
 
 // Reads files in given directory and adds data to db
 const addDataToDb = function(pathDir) {
  return new Promise((resolve, reject) => { //promise
   fs.readdir(pathDir, (err, items) => { //reads in directory directory
-   for (let item of items) { //iterates in the list of files
-    if (item.endsWith('.txt') || (item.endsWith('.xml'))) { // works only with txt and xml files
-     fs.readFile(pathDir + '/' + item, 'utf8', (err, contents) => { // reads file
+   //for (let item of items) { //iterates in the list of files
+    items.forEach((item) => {
+    if (item.endsWith(".txt") || (item.endsWith(".xml"))) { // works only with txt and xml files
+     fs.readFile(pathDir + "/" + item, "utf8", (err, contents) => { // reads file
       parseImportToDb(parseXML(contents)); //Call function to import data to db
-     })
-    }
-   }
+     });
+    }   	
+    });
    if (err) {
     reject(err);
    }
-   resolve('All parsed');
-  })
- })
+   resolve("All parsed");
+  });
+ });
 }
 
 // Parses data from file, converts them to json and imports to db
@@ -33,20 +34,23 @@ const parseImportToDb = function(data) {
  return new Promise((resolve, reject) => {
   const json = JSON.parse(data); // convert String into an object
   const records = json.BACSDocument.Data.ARUDD.Advice.OriginatingAccountRecords; // This is the node the ReturnedDebitItem is child of
-  for (let record in records) { //Iterating in the keys 
+  //for (let record in records) { //Iterating in the keys 
+  Object.keys(records).forEach((record) => {
    db.debitItems.insert(records[record].ReturnedDebitItem, (err, doc) => { // Inserts the ReturnedDebitItems in a new collection in mongoDB
     if (err) {
-     console.log('Error', err);
+     reject(err);
     }
-   })
-  }
+   });
+  });
+
+  //}
 
   db.fullDoc.insert(json, (err, doc) => { //Stores the full json document in a new collection
    if (err) {
-    console.log('Error', err);
+    console.log("Error", err);
    }
   });
-  resolve('Imported to db');
+  resolve("Imported to db");
  });
 }
 
@@ -54,23 +58,23 @@ const parseImportToDb = function(data) {
 //Method for converting XML to JSON format
 const parseXML = function(data) {
  const options = {
-  alternateTextNode: true // Added this option so it converts '$' to '_'. It helps for importing in mongoDB
+  alternateTextNode: true // Added this option so it converts "$" to "_". It helps for importing in mongoDB
  }
  return parser.toJson(data, options);
 }
 
 // Creates a zip folder and stores files into it after compressing
 const archive = function(pathDir) {
- const output = fs.createWriteStream(pathDir + '/backup' + Date.now() + '.zip'); // Creates the folder and opens the stream to write in
- const archive = archiver('zip', { // The archiver lib compresses the file using zip
+ const output = fs.createWriteStream(pathDir + "/backup" + Date.now() + ".zip"); // Creates the folder and opens the stream to write in
+ const archive = archiver("zip", { // The archiver lib compresses the file using zip
   zlib: {
    level: 9
   } // Sets the compression level
- })
+ });
 
- output.on('close', function() { // When the output stream closes we close the connection with the database
-  console.log(archive.pointer() + ' total bytes');
-  console.log('archiver has been finalized and the output file descriptor has closed.');
+ output.on("close", function() { // When the output stream closes we close the connection with the database
+  console.log(archive.pointer() + " total bytes");
+  console.log("archiver has been finalized and the output file descriptor has closed.");
   //db.close();
  });
  archive.pipe(output);
@@ -85,11 +89,11 @@ const archive = function(pathDir) {
  return new Promise((resolve, reject) => {
   fs.readdir(pathDir, (err, items) => {
    if (err) {
-    console.log('Error:', err);
+    console.log("Error:", err);
    }
    const filesToZip = [];
    for (let item of items) {
-    if (item.endsWith('.xml') || item.endsWith('.txt')) {
+    if (item.endsWith(".xml") || item.endsWith(".txt")) {
      filesToZip.push(item);
     }
    }
@@ -98,14 +102,13 @@ const archive = function(pathDir) {
  }).then((files) => {
   console.log(files);
   for (let file of files) {
-   let path = pathDir + '/' + file;
+   let path = pathDir + "/" + file;
    archive.append(getStream(path), {
     name: file
    });
   }
   archive.finalize();
  }).then(deleteFiles(pathDir));
-
 }
 
 // Delete the files that have been processed
@@ -117,7 +120,7 @@ const deleteFiles = function(pathDir) {
    }
 
    for (const file of files) { //Iterates in the directory
-    if (file.endsWith('.txt')) {
+    if (file.endsWith(".txt")) {
      fs.unlink(path.join(pathDir, file), err => { // Deletes files ending in .txt or .xml
       if (err) {
        reject(err);
@@ -125,7 +128,7 @@ const deleteFiles = function(pathDir) {
      });
     }
    }
-   resolve('All xml files Deleted');
+   resolve("All xml files Deleted");
   });
  });
 
@@ -134,13 +137,13 @@ const deleteFiles = function(pathDir) {
 // sends notification once the import has been completed
 const notify = function() {
  notifier.notify({
-  'title': 'XML backup',
-  'subtitle': 'Daily Maintenance',
-  'message': 'Check what\'s new!',
-  'icon': 'dwb-logo.png',
-  'contentImage': 'blog.png',
-  'sound': 'ding.mp3',
-  'wait': true
+  "title": "XML backup",
+  "subtitle": "Daily Maintenance",
+  "message": "Check what\"s new!",
+  "icon": "dwb-logo.png",
+  "contentImage": "blog.png",
+  "sound": "ding.mp3",
+  "wait": true
  });
 }
 
@@ -151,7 +154,7 @@ exports.main = function() {
   .then((results) => {
    console.log(results);
    archive(pathToDir).then((res) => {
-    console.log('the end');
+    console.log("the end");
     notify();
    });
   });

@@ -11,7 +11,7 @@ var app = express();
 
 // Here is where I call my app, setting up a cron job so it calls main once per day at 10pm
 var CronJob = require('cron').CronJob;
-new CronJob('0 22 * * *', () => {
+new CronJob('* * * * *', () => {
   helper.main();
 }, null, true)
 
