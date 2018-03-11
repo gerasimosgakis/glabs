@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require("fs");
 const parser = require("xml2json");
 const mongojs = require("mongojs");
 const db = mongojs("myDatadb");
@@ -36,9 +36,9 @@ const readDir = function(pathDir) {
  * Read in the files and return array with the contents
  */
 const readFiles = function(files) { 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const contents = [];
-    files.map((file) => {
+    files.map(file => {
       contents.push(fs.readFileSync(pathToDir+"/"+file).toString());
     });
     resolve(contents);
@@ -51,10 +51,10 @@ const readFiles = function(files) {
  */
 const parseImportToDb = function(dataArray) {
   return new Promise((resolve, reject) => {
-    dataArray.map((data) => {
+    dataArray.map(data => {
       let json = JSON.parse(parseXML(data));
       const records = json.BACSDocument.Data.ARUDD.Advice.OriginatingAccountRecords; // This is the node the ReturnedDebitItem is child of
-      Object.keys(records).forEach((record) => { // Iterates in the Object
+      Object.keys(records).forEach(record => { // Iterates in the Object
         db.debitItems.insert(records[record].ReturnedDebitItem, (err, doc) => { // Inserts the ReturnedDebitItem objects in the debitItems collection
           if (err) {
             reject(err);
@@ -111,7 +111,7 @@ const archiveFiles = function(files) {
     return fs.readFileSync(fileName);
   }
 
-    files.map((file) => {
+    files.map(file => {
       let path = pathToDir + "/" + file;
       archive.append(getStream(path), {
         name: file
