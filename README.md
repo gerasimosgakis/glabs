@@ -22,7 +22,7 @@ Make sure you have [Node.js](http://nodejs.org/) and [MongoDB](https://www.mongo
 
 ```sh
 git clone https://github.com/gerasimosgakis/myData.git # or clone your own fork
-cd myGlabs
+cd myData
 npm install
 npm start
 ```
