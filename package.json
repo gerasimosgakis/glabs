@@ -23,5 +23,6 @@
   },
   "devDependencies": {
     "nodemon": "^1.17.1"
-  }
+  },
+  "author": "Gerasimos Gakis"
 }
