@@ -35,10 +35,6 @@ const readDir = function(pathDir) {
  * Read in the files and return array with the contents
  */
 const readFiles = function(files) {
-    if (files.length < 1) { // Exit if there are no files in the directory
-        console.log("No files to check");
-        return;
-    }
     return new Promise(resolve => {
         const contents = [];
         files.map(file => {
