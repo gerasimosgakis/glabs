@@ -5,7 +5,7 @@ A Node js application
 ## Description
 
 ### INTRODUCTION
-Glabs receive a set of files daily from a bank that contain a structured XML schema (example of one is attached). These files are manually read and then hand posted to the core lending platform. 
+The company receive a set of files daily from a bank that contain a structured XML schema (example of one is attached). These files are manually read and then hand posted to the core lending platform. 
 
 ### Functionality
 1) Reads the directory
